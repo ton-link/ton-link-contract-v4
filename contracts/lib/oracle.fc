@@ -1,0 +1,25 @@
+() oracle::execute::get(slice sender_address, slice in_msg_body) impure {
+        (cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list) = storage::load_data();
+        
+        
+        slice feeder_for_chosing = (feeder_list_for_chosing.udict_get_maybe_ref(64, feeder_number)).begin_parse();
+        var (_, key_addr) = parse_std_addr(feeder_for_chosing~load_msg_addr());
+        slice vote = (vote_list.udict_get_maybe_ref(256, key_addr)).begin_parse();
+
+        cell msg_to_client = begin_cell()
+                .store_slice(sender_address)
+                .store_uint(vote~load_uint(64), 64)
+                .store_ref(in_msg_body~load_ref())
+                .store_uint(now(), 64)
+        .end_cell();
+        
+        var msg = begin_cell()
+              .store_uint(0x18, 6)
+              .store_slice(sender_address)
+              .store_grams(0)
+              .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+              .store_ref(msg_to_client)
+        .end_cell();
+        send_raw_message(msg, 64);
+        return ();
+}

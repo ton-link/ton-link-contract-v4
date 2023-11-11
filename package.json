@@ -1,0 +1,29 @@
+{
+    "name": "ton-link-contract-v4",
+    "version": "4.0.0",
+    "scripts": {
+        "build": "blueprint build",
+        "start": "blueprint build & mocha -r ts-node/register 'tests/**/*.ts'",
+        "test": "mocha -r ts-node/register 'tests/**/*.ts'"
+    },
+    "devDependencies": {
+        "@ton-community/blueprint": "^0.12.0",
+        "@ton-community/sandbox": "^0.11.0",
+        "@ton-community/test-utils": "^0.3.0",
+        "@types/chai": "^4.3.10",
+        "@types/mocha": "^10.0.1",
+        "@types/node": "^20.2.5",
+        "prettier": "^2.8.6",
+        "ton": "~13.6.0",
+        "ton-core": "^0.51.0",
+        "ton-crypto": "^3.2.0",
+        "ts-jest": "^29.0.5",
+        "ts-node": "^10.9.1",
+        "typescript": "^4.9.5"
+    },
+    "dependencies": {
+        "chai": "^4.3.10",
+        "jscrypto": "^1.0.3",
+        "mocha": "^10.2.0"
+    }
+}

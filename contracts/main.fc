@@ -1,0 +1,30 @@
+{-
+	@title: ton-link
+	@custom: version 4.0
+	@author Konstantin <konstantin@quadrate.org>
+-}
+
+#include "imports/stdlib.fc";
+#include "storage.fc";
+#include "utils/utils.fc";
+#include "lib/codes.fc";
+#include "lib/error.fc";
+#include "lib/vote.fc";
+#include "lib/get.fc";
+#include "lib/feeder.fc";
+#include "lib/oracle.fc";
+
+() recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
+        (cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list) = storage::load_data();
+        slice sender_address = utils::parse_sender_address(in_msg_full);
+	int op = in_msg_body~load_uint(32);
+	int query_id = in_msg_body~load_uint(64);
+
+
+	if (op == op::feeder::add()) { feeder::execute::add(sender_address, in_msg_body, msg_value); return (); }
+        if (op == op::oracle::vote()) { vote::execute::vote(sender_address, in_msg_body); return (); }
+	if (op == op::oracle::get()) { oracle::execute::get(sender_address, in_msg_body); return (); }
+
+
+	throw(0xffff);
+}

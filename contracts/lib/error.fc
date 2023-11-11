@@ -1,0 +1,1 @@
+int error::feeder_not_set() asm "100 PUSHINT";
