@@ -1,0 +1,4 @@
+int math::CalculatePower(int amt) {
+        return amt / 1000000000;
+}
+

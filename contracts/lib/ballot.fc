@@ -1,0 +1,40 @@
+(slice, int) ballot::WeightedMedian(cell pb, int feeder_max_number) {
+        int totalPower = ballot::Power(pb, feeder_max_number);
+        int i = 0;
+        if (totalPower > 0) {
+                int pivot = 0;
+                repeat(feeder_max_number) {
+                        slice feeder = (pb.udict_get_maybe_ref(64, i)).begin_parse();
+                        slice feeder_address = feeder~load_msg_addr();
+                        int status = feeder~load_uint(2);
+                        if (status == 0) {
+                                int power = feeder~load_uint(64);
+                                pivot += power;
+                                if (pivot >= (totalPower / 2)) {
+                                        return (feeder_address, -1);
+                                }
+                        }
+                }
+        }
+        return (utils::get_null_slice(), 0);
+}
+
+int ballot::Power(cell pb, int feeder_max_number) {
+        int totalPower = 0;
+        int i = 0;
+        repeat(feeder_max_number) {
+                slice feeder = (pb.udict_get_maybe_ref(64, i)).begin_parse();
+                slice feeder_address = feeder~load_msg_addr();
+                int status = feeder~load_uint(2);
+                if (status == 0) {
+                        int power = feeder~load_uint(64);
+                        totalPower += power;
+                }
+                i += 1;
+        }
+        return totalPower;
+}
+
+int ballot::StandardDeviation(cell pb, int feeder_max_number) {
+        (slice feeder_weighted_median, int found) = ballot::WeightedMedian(pb, feeder_max_number);
+}

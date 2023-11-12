@@ -1,8 +1,8 @@
 import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode, TupleBuilder } from 'ton-core';
 
-export type MainConfig = {};
+export type TonLinkV4Config = {};
 
-export function mainConfigToCell(config: MainConfig): Cell {
+export function mainConfigToCell(config: TonLinkV4Config): Cell {
     return beginCell()
         .storeDict(null)
         .storeDict(null)
@@ -11,17 +11,17 @@ export function mainConfigToCell(config: MainConfig): Cell {
     .endCell();
 }
 
-export class Main implements Contract {
+export class TonLinkV4 implements Contract {
     constructor(readonly address: Address, readonly init?: { code: Cell; data: Cell }) {}
 
     static createFromAddress(address: Address) {
-        return new Main(address);
+        return new TonLinkV4(address);
     }
 
-    static createFromConfig(config: MainConfig, code: Cell, workchain = 0) {
+    static createFromConfig(config: TonLinkV4Config, code: Cell, workchain = 0) {
         const data = mainConfigToCell(config);
         const init = { code, data };
-        return new Main(contractAddress(workchain, init), init);
+        return new TonLinkV4(contractAddress(workchain, init), init);
     }
 
     async sendDeploy(provider: ContractProvider, via: Sender, value: bigint) {

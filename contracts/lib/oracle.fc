@@ -1,5 +1,5 @@
 () oracle::execute::get(slice sender_address, slice in_msg_body) impure {
-        (cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list) = storage::load_data();
+        (cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list, cell warden_list) = storage::load_data();
         
         
         slice feeder_for_chosing = (feeder_list_for_chosing.udict_get_maybe_ref(64, feeder_number)).begin_parse();

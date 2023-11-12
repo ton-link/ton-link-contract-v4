@@ -1,6 +1,6 @@
 import { Blockchain, SandboxContract, printTransactionFees, TreasuryContract } from '@ton-community/sandbox';
 import { Cell, toNano, beginCell, } from 'ton-core';
-import { Main } from '../wrappers/Main';
+import { TonLinkV4 } from '../wrappers/TonLinkV4';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
 import { flattenTransaction } from "./transaction";
@@ -8,16 +8,16 @@ import { expect } from "chai";
 
 describe('TonLink-V4', () => {
     let blockchain: Blockchain;
-    let tonlink: SandboxContract<Main>;
+    let tonlink: SandboxContract<TonLinkV4>;
     let deployer: SandboxContract<TreasuryContract>;
     let feeder: SandboxContract<TreasuryContract>;
     let user: SandboxContract<TreasuryContract>;
 
     beforeEach(async () => {
-        let code = await compile('Main');
+        let code = await compile('TonLinkV4');
         blockchain = await Blockchain.create();
 
-        tonlink = blockchain.openContract(Main.createFromConfig({}, code));
+        tonlink = blockchain.openContract(TonLinkV4.createFromConfig({}, code));
 
         deployer = await blockchain.treasury('deployer');
         feeder = await blockchain.treasury('feeder');
