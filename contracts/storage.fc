@@ -1,9 +1,9 @@
-(cell, cell, int, cell, cell) storage::load_data() inline {
+(cell, cell, int, cell, cell, int, int) storage::load_data() inline {
         slice ds = get_data().begin_parse();
-        return (ds~load_dict(), ds~load_dict(), ds~load_uint(64), ds~load_dict(), ds~load_dict());
+        return (ds~load_dict(), ds~load_dict(), ds~load_uint(64), ds~load_dict(), ds~load_dict(), ds~load_uint(64), ds~load_uint(64));
 }
 
-() storage::save_data(cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list, cell warden_list) impure inline {
+() storage::save_data(cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list, cell warden_list, int er, int lut) impure inline {
         set_data(
                 begin_cell()
                         .store_dict(feeder_list)
@@ -11,6 +11,8 @@
                         .store_uint(feeder_number, 64)
                         .store_dict(vote_list)
                         .store_dict(warden_list)
+                        .store_uint(er, 64)
+                        .store_uint(lut, 64)
                 .end_cell()
         );
 }

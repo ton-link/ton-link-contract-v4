@@ -1,5 +1,5 @@
 () feeder::execute::add(slice from_address, slice msg, int input_amount) impure {
-        (cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list, cell warden_list) = storage::load_data();
+        (cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list, cell warden_list, int er, int last_update_time) = storage::load_data();
         var (_, key_addr) = parse_std_addr(from_address);
         throw_unless(99, input_amount == 1000000000);
         throw_if(100, check_slice_for_empty?(feeder_list.udict_get_maybe_ref(256, key_addr)));
@@ -21,12 +21,12 @@
         feeder_list~udict_set_ref(256, key_addr, new_feeder);
         feeder_list_for_chosing~udict_set_ref(64, feeder_number + 1, new_feeder_with_power);
 
-        storage::save_data(feeder_list, feeder_list_for_chosing, feeder_number, vote_list, warden_list);
+        storage::save_data(feeder_list, feeder_list_for_chosing, feeder_number, vote_list, warden_list, er, last_update_time);
         return ();
 }
 
 () feeder::execute::remove(slice msg, slice from_address, int input_amount) impure {
-        (cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list, cell warden_list) = storage::load_data();
+        (cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list, cell warden_list, int er, int last_update_time) = storage::load_data();
         var (_, key_addr) = parse_std_addr(from_address);
         throw_unless(101, check_slice_for_empty?(feeder_list.udict_get_maybe_ref(256, key_addr)));
 
@@ -53,13 +53,13 @@
 
         cell new_feeder_with_power = begin_cell()
                 .store_slice(from_address)
-                .store_uint(0, 2)
-                .store_uint(power, 64)
+                .store_uint(1, 2)
+                .store_uint(0, 64)
         .end_cell();
 
         feeder_list~udict_set_ref(256, key_addr, new_feeder);
         feeder_list_for_chosing~udict_set_ref(64, feeder_number_from_cell, new_feeder_with_power);
 
-        storage::save_data(feeder_list, feeder_list_for_chosing, feeder_number, vote_list, warden_list);
+        storage::save_data(feeder_list, feeder_list_for_chosing, feeder_number, vote_list, warden_list, er, last_update_time);
         return ();
 }

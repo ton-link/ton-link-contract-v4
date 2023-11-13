@@ -1,24 +1,3 @@
-(slice, int) ballot::WeightedMedian(cell pb, int feeder_max_number) {
-        int totalPower = ballot::Power(pb, feeder_max_number);
-        int i = 0;
-        if (totalPower > 0) {
-                int pivot = 0;
-                repeat(feeder_max_number) {
-                        slice feeder = (pb.udict_get_maybe_ref(64, i)).begin_parse();
-                        slice feeder_address = feeder~load_msg_addr();
-                        int status = feeder~load_uint(2);
-                        if (status == 0) {
-                                int power = feeder~load_uint(64);
-                                pivot += power;
-                                if (pivot >= (totalPower / 2)) {
-                                        return (feeder_address, -1);
-                                }
-                        }
-                }
-        }
-        return (utils::get_null_slice(), 0);
-}
-
 int ballot::Power(cell pb, int feeder_max_number) {
         int totalPower = 0;
         int i = 0;
@@ -35,6 +14,64 @@ int ballot::Power(cell pb, int feeder_max_number) {
         return totalPower;
 }
 
-int ballot::StandardDeviation(cell pb, int feeder_max_number) {
-        (slice feeder_weighted_median, int found) = ballot::WeightedMedian(pb, feeder_max_number);
+(slice, int) ballot::WeightedMedian(cell pb, cell vote_list, int feeder_max_number) {
+        int totalPower = ballot::Power(pb, feeder_max_number);
+        int i = 0;
+        if (totalPower > 0) {
+                int pivot = 0;
+                repeat(feeder_max_number) {
+                        slice feeder = (pb.udict_get_maybe_ref(64, i)).begin_parse();
+                        slice feeder_address = feeder~load_msg_addr();
+                        int status = feeder~load_uint(2);
+                        if (status == 0) {
+                                int power = feeder~load_uint(64);
+                                pivot += power;
+                                if (pivot >= (totalPower / 2)) {
+                                        var (_, key_addr) = parse_std_addr(feeder_address);
+                                        slice vote = (vote_list.udict_get_maybe_ref(256, key_addr)).begin_parse();
+                                        int vote_status = vote~load_uint(2);
+                                        if (vote_status == 1) {
+                                                return (feeder_address, -1);
+                                        }
+                                }
+                        }
+                        i += 1;
+                }
+        }
+        return (utils::get_null_slice(), 0);
+}
+
+int ballot::StandardDeviation(cell pb, cell vote_list, int feeder_max_number) {
+        (slice feeder_weighted_median, int found) = ballot::WeightedMedian(pb, vote_list, feeder_max_number);
+        var (_, key_addr) = parse_std_addr(feeder_weighted_median);
+        slice vote_median = (vote_list.udict_get_maybe_ref(256, key_addr)).begin_parse();
+        vote_median~load_uint(2);
+        int median = vote_median~load_uint(64);
+
+        int summ = 0;
+        int i = 0;
+        int ballotLength = feeder_max_number;
+        repeat(feeder_max_number) {
+                slice feeder = (pb.udict_get_maybe_ref(64, i)).begin_parse();
+                slice feeder_address = feeder~load_msg_addr();
+                int status = feeder~load_uint(2);
+                if (status == 0) {
+                        try { 
+                                var (_, key_addr) = parse_std_addr(feeder_address);
+                                slice vote = (vote_list.udict_get_maybe_ref(256, key_addr)).begin_parse();
+                                int vote_status = vote~load_uint(2);
+                                if (vote_status == 1) {
+                                        int exchangeRate = vote~load_uint(64);
+                                        int deviation = exchangeRate - median;
+                                        summ += (deviation * deviation);
+                                }
+                        } catch (x, n) {
+                                ballotLength -= 1;
+                                do_continue();
+                        }
+                }
+        }
+        int variance = summ / ballotLength;
+        int standardDeviation = math::sqrt(variance);
+        return standardDeviation;
 }

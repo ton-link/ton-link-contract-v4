@@ -1,14 +1,9 @@
 () oracle::execute::get(slice sender_address, slice in_msg_body) impure {
-        (cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list, cell warden_list) = storage::load_data();
+        (cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list, cell warden_list, int er, int last_update_time) = storage::load_data();
         
-        
-        slice feeder_for_chosing = (feeder_list_for_chosing.udict_get_maybe_ref(64, feeder_number)).begin_parse();
-        var (_, key_addr) = parse_std_addr(feeder_for_chosing~load_msg_addr());
-        slice vote = (vote_list.udict_get_maybe_ref(256, key_addr)).begin_parse();
-
         cell msg_to_client = begin_cell()
                 .store_slice(sender_address)
-                .store_uint(vote~load_uint(64), 64)
+                .store_uint(er, 64)
                 .store_ref(in_msg_body~load_ref())
                 .store_uint(now(), 64)
         .end_cell();

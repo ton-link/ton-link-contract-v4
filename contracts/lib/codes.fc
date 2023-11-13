@@ -7,5 +7,11 @@ int op::burn_notification() asm "0x7bdd97de PUSHINT";
 int op::mint() asm "21 PUSHINT";
 
 int op::feeder::add() asm "40 PUSHINT";
+int op::feeder::remove() asm "50 PUSHINT";
+
 int op::oracle::vote() asm "160 PUSHINT";
 int op::oracle::get() asm "170 PUSHINT";
+
+int op::warden::add() asm "200 PUSHINT";
+int op::warden::remove() asm "210 PUSHINT";
+int op::warden::call() asm "220 PUSHINT";
