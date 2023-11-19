@@ -19,7 +19,7 @@
 #include "lib/warden.fc";
 
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
-        (cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list, cell warden_list, int er, int last_update_time) = storage::load_data();
+        (cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list, cell warden_list, int er, int last_update_time, cell denom) = storage::load_data();
         slice sender_address = utils::parse_sender_address(in_msg_full);
 	int op = in_msg_body~load_uint(32);
 	int query_id = in_msg_body~load_uint(64);

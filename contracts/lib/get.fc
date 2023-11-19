@@ -1,5 +1,5 @@
 int get_vote_by_id(slice address) method_id {
-        (_, _, _, cell vote_list, _, _, _) = storage::load_data();
+        (_, _, _, cell vote_list, _, _, _, _) = storage::load_data();
         var (_, key_addr) = parse_std_addr(address);
         slice vote = (vote_list.udict_get_maybe_ref(256, key_addr)).begin_parse();
         vote~load_uint(2);
@@ -7,6 +7,16 @@ int get_vote_by_id(slice address) method_id {
 }
 
 int get_exchange_rate() method_id {
-        (_, _, _, _, _, int er, _) = storage::load_data();
+        (_, _, _, _, _, int er, _, _) = storage::load_data();
         return er;
+}
+
+int get_last_update_time() method_id {
+        (_, _, _, _, _, _, int last_update_time, _) = storage::load_data();
+        return last_update_time;
+}
+
+cell get_denom() method_id {
+        (_, _, _, _, _, _, _, cell denom) = storage::load_data();
+        return denom;
 }

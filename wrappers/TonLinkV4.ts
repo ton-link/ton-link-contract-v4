@@ -2,15 +2,20 @@ import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, 
 
 export type TonLinkV4Config = {};
 
-export function mainConfigToCell(config: TonLinkV4Config): Cell {
+export function mainConfigToCell(config: TonLinkV4Config): Cell {    
     return beginCell()
-        .storeDict(null)
-        .storeDict(null)
+        .storeRef(
+            beginCell()
+                .storeDict(null)
+                .storeDict(null)
+            .endCell()
+        )
         .storeUint(0, 64)
         .storeDict(null)
         .storeDict(null)
         .storeUint(0, 64)
         .storeUint(Date.now(), 64)
+        .storeRef(beginCell().storeStringTail("TON").endCell())
     .endCell();
 }
 

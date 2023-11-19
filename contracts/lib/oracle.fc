@@ -1,5 +1,5 @@
 () oracle::execute::get(slice sender_address, slice in_msg_body) impure {
-        (cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list, cell warden_list, int er, int last_update_time) = storage::load_data();
+        (cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list, cell warden_list, int er, int last_update_time, cell denom) = storage::load_data();
         
         cell msg_to_client = begin_cell()
                 .store_slice(sender_address)
