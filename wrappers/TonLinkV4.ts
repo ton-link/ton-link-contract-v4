@@ -8,6 +8,9 @@ export function mainConfigToCell(config: TonLinkV4Config): Cell {
         .storeDict(null)
         .storeUint(0, 64)
         .storeDict(null)
+        .storeDict(null)
+        .storeUint(0, 64)
+        .storeUint(Date.now(), 64)
     .endCell();
 }
 
@@ -35,19 +38,18 @@ export class TonLinkV4 implements Contract {
     async sendAction(provider: ContractProvider, via: Sender, body: Cell) {
         var res = await provider.internal(via, {
                 value: "1.5",
-                sendMode: SendMode.PAY_GAS_SEPARATELY,
                 body: body
         });
         return res
     }
 
-    async sendStake(provider: ContractProvider, via: Sender) {
+    async sendStake(provider: ContractProvider, via: Sender, val: string) {
         var body = beginCell()
                 .storeUint(40, 32)
                 .storeUint(0, 64)
         .endCell()
         var res = await provider.internal(via, {
-            value: "30000",
+            value: val,
             sendMode: SendMode.PAY_GAS_SEPARATELY,
             body: body
         });
@@ -59,5 +61,11 @@ export class TonLinkV4 implements Contract {
         args.writeAddress(wallet);
         const { stack } = await provider.get("get_vote_by_id", args.build());
         return stack.readBigNumber();
-}
+    }
+
+    async get_exchange_rate(provider: ContractProvider) {
+        let args = new TupleBuilder();
+        const { stack } = await provider.get("get_exchange_rate", args.build());
+        return stack.readBigNumber();
+    }
 }

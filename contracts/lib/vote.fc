@@ -19,6 +19,7 @@
 () vote::execute::EndVotePeriod() impure {
         (cell feeder_list, cell feeder_list_for_chosing, int feeder_number, cell vote_list, cell warden_list, int er, int last_update_time) = storage::load_data();
         (slice feeder_weighted_median, int found) = ballot::WeightedMedian(feeder_list_for_chosing, vote_list, feeder_number);
+        throw_if(250, found == 0);
         var (_, key_addr) = parse_std_addr(feeder_weighted_median);
         slice vote_median = (vote_list.udict_get_maybe_ref(256, key_addr)).begin_parse();
         vote_median~load_uint(2);
@@ -31,8 +32,23 @@
         ;;        rewardSpread = standardDeviation;
         ;;}
 
+        int i = 1;
+        repeat(feeder_number){
+                slice feeder = (feeder_list_for_chosing.udict_get_maybe_ref(64, i)).begin_parse();
+                slice feeder_address = feeder~load_msg_addr();  
+                var (_, key_addr) = parse_std_addr(feeder_address);
+                cell vote = begin_cell()
+                        .store_uint(0, 2)
+                        .store_uint(0, 64)
+                        .store_slice(feeder_address)
+                        .store_uint(now(), 64)
+                .end_cell();  
+                vote_list~udict_set_ref(256, key_addr, vote); 
+                i += 1;             
+        }
 
 
+        storage::save_data(feeder_list, feeder_list_for_chosing, feeder_number, vote_list, warden_list, weightedMedian, now());
         return ();
 }
 

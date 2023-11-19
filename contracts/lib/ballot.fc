@@ -1,8 +1,8 @@
-int ballot::Power(cell pb, int feeder_max_number) {
+int ballot::Power(cell feeder_list_for_chosing, int feeder_max_number) {
         int totalPower = 0;
-        int i = 0;
+        int i = 1;
         repeat(feeder_max_number) {
-                slice feeder = (pb.udict_get_maybe_ref(64, i)).begin_parse();
+                slice feeder = (feeder_list_for_chosing.udict_get_maybe_ref(64, i)).begin_parse();
                 slice feeder_address = feeder~load_msg_addr();
                 int status = feeder~load_uint(2);
                 if (status == 0) {
@@ -14,13 +14,13 @@ int ballot::Power(cell pb, int feeder_max_number) {
         return totalPower;
 }
 
-(slice, int) ballot::WeightedMedian(cell pb, cell vote_list, int feeder_max_number) {
-        int totalPower = ballot::Power(pb, feeder_max_number);
-        int i = 0;
+(slice, int) ballot::WeightedMedian(cell feeder_list_for_chosing, cell vote_list, int feeder_max_number) {
+        int totalPower = ballot::Power(feeder_list_for_chosing, feeder_max_number);
+        int i = 1;
         if (totalPower > 0) {
                 int pivot = 0;
                 repeat(feeder_max_number) {
-                        slice feeder = (pb.udict_get_maybe_ref(64, i)).begin_parse();
+                        slice feeder = (feeder_list_for_chosing.udict_get_maybe_ref(64, i)).begin_parse();
                         slice feeder_address = feeder~load_msg_addr();
                         int status = feeder~load_uint(2);
                         if (status == 0) {
@@ -41,8 +41,8 @@ int ballot::Power(cell pb, int feeder_max_number) {
         return (utils::get_null_slice(), 0);
 }
 
-int ballot::StandardDeviation(cell pb, cell vote_list, int feeder_max_number) {
-        (slice feeder_weighted_median, int found) = ballot::WeightedMedian(pb, vote_list, feeder_max_number);
+int ballot::StandardDeviation(cell feeder_list_for_chosing, cell vote_list, int feeder_max_number) {
+        (slice feeder_weighted_median, int found) = ballot::WeightedMedian(feeder_list_for_chosing, vote_list, feeder_max_number);
         var (_, key_addr) = parse_std_addr(feeder_weighted_median);
         slice vote_median = (vote_list.udict_get_maybe_ref(256, key_addr)).begin_parse();
         vote_median~load_uint(2);
@@ -52,7 +52,7 @@ int ballot::StandardDeviation(cell pb, cell vote_list, int feeder_max_number) {
         int i = 0;
         int ballotLength = feeder_max_number;
         repeat(feeder_max_number) {
-                slice feeder = (pb.udict_get_maybe_ref(64, i)).begin_parse();
+                slice feeder = (feeder_list_for_chosing.udict_get_maybe_ref(64, i)).begin_parse();
                 slice feeder_address = feeder~load_msg_addr();
                 int status = feeder~load_uint(2);
                 if (status == 0) {

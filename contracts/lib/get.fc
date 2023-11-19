@@ -2,6 +2,7 @@ int get_vote_by_id(slice address) method_id {
         (_, _, _, cell vote_list, _, _, _) = storage::load_data();
         var (_, key_addr) = parse_std_addr(address);
         slice vote = (vote_list.udict_get_maybe_ref(256, key_addr)).begin_parse();
+        vote~load_uint(2);
         return vote~load_uint(64);
 }
 

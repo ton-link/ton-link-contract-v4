@@ -28,8 +28,8 @@
         var (_, key_addr) = parse_std_addr(from_address);
         throw_unless(100, check_slice_for_empty?(warden_list.udict_get_maybe_ref(256, key_addr)));
         int period = now() - last_update_time;
-        if( period == 30 ) {
+        ;;if( period >= 30 ) {
                 vote::execute::EndVotePeriod();
-        }
+        ;;}
         return ();
 }
