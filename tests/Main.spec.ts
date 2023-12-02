@@ -337,5 +337,70 @@ describe('TonLink-V4', () => {
         er = await tonlink.get_exchange_rate();
         expect(er).toEqual(2300000n)
     })
+
+    it('send 1 vote from 1 feeder', async () => {   
+        let result = await tonlink.sendStake(feeder.getSender(), "30000")
+        expect(result.transactions).toHaveTransaction({
+            from: feeder.address,
+            to: tonlink.address,
+            aborted: false,
+            exitCode: 0,
+        });
+
+        let body = beginCell()
+            .storeUint(200, 32)
+            .storeUint(0, 64)
+        .endCell()
+        result = await tonlink.sendAction(warden.getSender(), body);
+        expect(result.transactions).toHaveTransaction({
+            from: warden.address,
+            to: tonlink.address,
+            aborted: false,
+            exitCode: 0,
+        });
+
+        body = beginCell()
+            .storeUint(160, 32)
+            .storeUint(0, 64)
+            .storeUint(450000, 64)
+        .endCell()
+        result = await tonlink.sendAction(feeder.getSender(), body);
+        expect(result.transactions).toHaveTransaction({
+            from: feeder.address,
+            to: tonlink.address,
+            aborted: false,
+            exitCode: 0,
+        });
+
+        body = beginCell()
+            .storeUint(220, 32)
+            .storeUint(0, 64)
+        .endCell()
+        result = await tonlink.sendAction(warden.getSender(), body);
+        expect(result.transactions).toHaveTransaction({
+            from: warden.address,
+            to: tonlink.address,
+            aborted: false,
+            exitCode: 0,
+        });
+
+        let er = await tonlink.get_exchange_rate();
+        expect(er).toEqual(450000n)
+
+        body = beginCell()
+            .storeUint(220, 32)
+            .storeUint(0, 64)
+        .endCell()
+        result = await tonlink.sendAction(warden.getSender(), body);
+        expect(result.transactions).toHaveTransaction({
+            from: warden.address,
+            to: tonlink.address,
+            aborted: false,
+            exitCode: 0,
+        });
+
+        er = await tonlink.get_exchange_rate();
+        expect(er).toEqual(450000n)
+    })
 });
 
